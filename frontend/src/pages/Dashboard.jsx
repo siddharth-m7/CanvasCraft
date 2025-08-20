@@ -15,6 +15,7 @@ const Dashboard = () => {
         {user ? `Welcome, ${user.user_metadata?.full_name || user.email}` : 'Loading…'}
       </p>
     </div>
+    
   );
 };
 

@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import AuthSuccess from './pages/AuthSuccess';
+import Homepage from './pages/homepage/Homepage';
 
 const Loader = () => (
   <div className="min-h-screen flex items-center justify-center">
@@ -26,6 +27,13 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Homepage */}
+        <Route
+          path="/home"
+          element={
+                <Homepage />
+          }
+        />
         {/* Public */}
         <Route
           path="/login"
@@ -51,6 +59,7 @@ const App = () => {
         <Route path="/auth/success" element={<AuthSuccess />} />
         <Route path="/auth/callback" element={<AuthSuccess />} />
 
+
         {/* Protected */}
         <Route
           path="/"
@@ -62,6 +71,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
