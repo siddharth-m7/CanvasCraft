@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Editor from './pages/Editor';
 import AuthSuccess from './pages/AuthSuccess';
 import Homepage from './pages/homepage/Homepage';
+import Navbar from './Components/Navbar';
 
 const Loader = () => (
   <div className="min-h-screen flex items-center justify-center">

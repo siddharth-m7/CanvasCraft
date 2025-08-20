@@ -4,28 +4,39 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Sparkles, Wand2 } from 'lucide-react';
 
+// Import hero images
+import aiGeneratedImage from '../../assets/images/hero-section/ai-generated.png';
+import imageEnhanceImage from '../../assets/images/hero-section/image-enhance.webp';
+import portraitImage from '../../assets/images/hero-section/portrait.jpg';
+
 const Hero = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
 
-  // Sample images for the carousel - replace with your actual images
+  // Hero images with consistent pattern (fixed property names)
   const heroImages = [
     {
       id: 1,
-      placeholder: "AI Generated Art",
+      image: aiGeneratedImage, // Changed from 'image' to consistent 'image'
+      alt: "AI Generated Art",
+      title: "AI Generated Art",
       description: "Digital artwork created with AI"
     },
     {
       id: 2,
-      placeholder: "Photo Enhancement",
+      image: imageEnhanceImage, // Changed from 'src' to 'image'
+      alt: "Photo Enhancement", 
+      title: "Photo Enhancement",
       description: "Professional photo editing"
     },
     {
       id: 3,
-      placeholder: "Logo Design",
-      description: "Custom logo creation"
+      image: portraitImage, // Changed from 'src' to 'image'
+      alt: "Portrait Editing",
+      title: "Portrait Editing", 
+      description: "Transform your photos"
     }
   ];
 
@@ -114,25 +125,59 @@ const Hero = () => {
                 }}
                 className="absolute inset-0"
               >
-                {heroImages.map((image, index) => (
+                {heroImages.map((heroImage, index) => (
                   <div
-                    key={image.id}
-                    className="image-placeholder h-96 w-full flex flex-col items-center justify-center relative"
+                    key={heroImage.id}
+                    className="h-96 w-full relative"
                   >
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-slate-700 mb-2">
-                        {image.placeholder}
-                      </div>
-                      <div className="text-sm text-slate-500 font-medium">
-                        {image.description}
+                    {/* Image display with error handling like Gallery */}
+                    {heroImage.image ? (
+                      <img
+                        src={heroImage.image}
+                        alt={heroImage.alt}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          console.error('Failed to load image:', heroImage.image);
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    
+                    {/* Fallback placeholder similar to Gallery */}
+                    <div 
+                      className={`image-placeholder w-full h-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center ${heroImage.image ? 'hidden' : 'flex'}`}
+                      style={heroImage.image ? { display: 'none' } : {}}
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-semibold text-emerald-700 mb-2">
+                          {heroImage.title}
+                        </div>
+                        <div className="text-sm font-medium text-emerald-600">
+                          {heroImage.description}
+                        </div>
                       </div>
                     </div>
                     
-                    {/* Subtle overlay pattern for each image */}
+                    {/* Image overlay with title and description */}
+                  <div className="absolute inset-0 bg-opacity-50 flex flex-col items-center justify-end pb-6">
+                    <div className="text-center text-white drop-shadow-lg">
+                      <div className="text-2xl font-bold mb-2 drop-shadow-md">
+                        {heroImage.title}
+                      </div>
+                      <div className="text-sm font-medium opacity-90 drop-shadow-sm">
+                        {heroImage.description}
+                      </div>
+                      </div>
+                  </div>
+
+                    
+                    {/* Subtle gradient overlay for each image */}
                     <motion.div
                       animate={{
                         opacity: [0.1, 0.3, 0.1],
-                        scale: [1, 1.1, 1],
+                        scale: [1, 1.05, 1],
                       }}
                       transition={{
                         duration: 4,
@@ -140,7 +185,7 @@ const Hero = () => {
                         ease: "easeInOut",
                         delay: index * 0.5
                       }}
-                      className="absolute inset-0 bg-gradient-to-tr from-emerald-100/20 to-teal-100/20 rounded-2xl"
+                      className="absolute inset-0 bg-gradient-to-tr from-emerald-400/20 to-teal-400/20"
                     />
                   </div>
                 ))}
