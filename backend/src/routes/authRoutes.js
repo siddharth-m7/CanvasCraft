@@ -8,6 +8,7 @@ const {
   googleOAuthCallback,
   signout,
   refreshToken,
+  getLoggedInUser
 } = require('../controllers/authController');
 
 const router = express.Router();

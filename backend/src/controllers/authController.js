@@ -1,12 +1,30 @@
 // controllers/authController.js
 const supabase = require('../utils/supabase');
+const { z } = require('zod');
+
+const emailSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  firstName: z.string().max(50).optional().default(''),
+  lastName: z.string().max(50).optional().default(''),
+});
+
+const cookieOpts = (hours) => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "Strict",
+  maxAge: hours * 60 * 60 * 1000,
+  path: '/', // explicit
+});
 
 // Sign up with email and password
 const signupEmail = async (req, res) => {
-  const { email, password, firstName = '', lastName = '' } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+  // ✅ validate inputs
+  const parsed = emailSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: 'Invalid input' });
   }
+  const { email, password, firstName, lastName } = parsed.data;
 
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -18,17 +36,21 @@ const signupEmail = async (req, res) => {
           last_name: lastName,
           full_name: `${firstName} ${lastName}`.trim(),
         },
+        // Optional: set email redirect if you use email confirmations
       },
     });
+    if (error) return res.status(400).json({ error: error.message });
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
+    // ⚠️ Supabase may not create a session until email confirmed; if a session exists, set cookies
+    if (data.session) {
+      res.cookie('sb-access-token', data.session.access_token, cookieOpts(1));
+      res.cookie('sb-refresh-token', data.session.refresh_token, cookieOpts(24 * 30));
     }
 
+    // ✅ never send tokens back; return minimal info
     return res.status(201).json({
       message: 'User created successfully',
-      user: data.user,
-      session: data.session,
+      user: { id: data.user?.id, email: data.user?.email },
     });
   } catch (err) {
     console.error('Signup error:', err);
@@ -38,26 +60,19 @@ const signupEmail = async (req, res) => {
 
 // Log in with email and password
 const loginEmail = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
+  const parsed = emailSchema.pick({ email: true, password: true }).safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: 'Invalid input' });
+  const { email, password } = parsed.data;
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return res.status(400).json({ error: error.message });
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
+    // ✅ set cookies, don’t return tokens
+    res.cookie('sb-access-token', data.session.access_token, cookieOpts(1));
+    res.cookie('sb-refresh-token', data.session.refresh_token, cookieOpts(24 * 30));
 
-    return res.json({
-      message: 'Login successful',
-      user: data.user,
-      session: data.session,
-    });
+    return res.json({ message: 'Login successful', user: { id: data.user.id, email: data.user.email } });
   } catch (err) {
     console.error('Signin error:', err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -70,19 +85,13 @@ const googleOAuth = async (_req, res) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.CLIENT_URL}/auth/success`,
+        // ✅ send Google back to SERVER callback, not the client
+        redirectTo: `${process.env.SERVER_URL}/api/auth/callback`,
       },
     });
+    if (error) return res.status(400).json({ error: error.message });
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    // Send URL to client to redirect
-    return res.json({
-      message: 'Google OAuth initiated',
-      url: data.url,
-    });
+    return res.json({ message: 'Google OAuth initiated', url: data.url });
   } catch (err) {
     console.error('Google OAuth error:', err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -92,31 +101,33 @@ const googleOAuth = async (_req, res) => {
 // Handle OAuth callback (server exchange)
 const googleOAuthCallback = async (req, res) => {
   const { code } = req.query;
-  if (!code) {
-    return res.status(400).json({ error: 'Authorization code not provided' });
-  }
+  if (!code) return res.status(400).json({ error: 'Authorization code not provided' });
 
   try {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) return res.status(400).json({ error: error.message });
 
-    // Redirect to frontend with tokens
-    return res.redirect(`${process.env.CLIENT_URL}/auth/success?access_token=${data.session.access_token}&refresh_token=${data.session.refresh_token}`);
+    res.cookie('sb-access-token', data.session.access_token, cookieOpts(1));
+    res.cookie('sb-refresh-token', data.session.refresh_token, cookieOpts(24 * 30));
+
+    return res.redirect(`${process.env.CLIENT_URL}/auth/success`);
   } catch (err) {
     console.error('OAuth callback error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+
 // Sign out
 const signout = async (_req, res) => {
   try {
+    // Supabase signOut invalidates server-side; we also clear cookies
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
+    if (error) return res.status(400).json({ error: error.message });
+
+    res.clearCookie('sb-access-token', { path: '/' });
+    res.clearCookie('sb-refresh-token', { path: '/' });
+
     return res.json({ message: 'Logout successful' });
   } catch (err) {
     console.error('Signout error:', err);
@@ -126,27 +137,36 @@ const signout = async (_req, res) => {
 
 // Refresh token
 const refreshToken = async (req, res) => {
-  const { refresh_token } = req.body;
-  if (!refresh_token) {
-    return res.status(400).json({ error: 'Refresh token is required' });
-  }
-
   try {
-    const { data, error } = await supabase.auth.refreshSession({
-      refresh_token,
-    });
+    const refreshToken = req.cookies["sb-refresh-token"];
+    if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
+    const { data, error } = await supabase.auth.setSession({ refresh_token: refreshToken });
+    if (error || !data?.session) return res.status(401).json({ error: "Failed to refresh session" });
 
-    return res.json({
-      message: 'Token refreshed successfully',
-      session: data.session,
-    });
+    res.cookie('sb-access-token', data.session.access_token, cookieOpts(1));
+    res.cookie('sb-refresh-token', data.session.refresh_token, cookieOpts(24 * 30));
+
+    // Optionally include a minimal user snapshot to reduce extra call
+    return res.json({ message: "Session refreshed" });
   } catch (err) {
-    console.error('Refresh token error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Auth /refresh error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getLoggedInUser= async (req, res) => {
+  try {
+    const accessToken = req.cookies["sb-access-token"];
+    if (!accessToken) return res.status(401).json({ error: "Not authenticated" });
+
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error || !user) return res.status(401).json({ error: "Invalid or expired session" });
+
+    return res.json({ user });
+  } catch (err) {
+    console.error("Auth /me error:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -157,4 +177,5 @@ module.exports = {
   googleOAuthCallback,
   signout,
   refreshToken,
+  getLoggedInUser
 };

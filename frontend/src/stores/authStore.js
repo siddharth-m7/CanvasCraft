@@ -1,127 +1,90 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { supabase } from '../utils/supabase';
-import api from '../utils/api';
+import api from '../utils/api'; // axios/fetch wrapper, must have withCredentials=true
 
 const useAuthStore = create(
   subscribeWithSelector((set, get) => ({
     // State
     user: null,
-    session: null,
     loading: true,
     initialized: false,
 
     // Actions
     setUser: (user) => set({ user }),
-    setSession: (session) => set({ session }),
     setLoading: (loading) => set({ loading }),
     setInitialized: (initialized) => set({ initialized }),
 
-    // Initialize auth
+    // Initialize auth (check if logged in)
     initialize: async () => {
       if (get().initialized) return;
-      
+      set({ loading: true });
+
       try {
-        // Get initial session
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (!error && session) {
-          set({
-            session,
-            user: session.user,
-            loading: false,
-            initialized: true
-          });
-          
-          // Store tokens
-          localStorage.setItem('access_token', session.access_token);
-          localStorage.setItem('refresh_token', session.refresh_token);
-        } else {
-          set({
-            session: null,
-            user: null,
-            loading: false,
-            initialized: true
-          });
-        }
-
-        // Listen for auth changes
-        supabase.auth.onAuthStateChange((_event, session) => {
-          set({
-            session,
-            user: session?.user ?? null,
-            loading: false
-          });
-
-          if (session) {
-            localStorage.setItem('access_token', session.access_token);
-            localStorage.setItem('refresh_token', session.refresh_token);
-          } else {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-          }
-        });
-
-      } catch (error) {
-        console.error('Auth initialization error:', error);
+        const res = await api.get('/auth/user', { withCredentials: true });
         set({
-          session: null,
+          user: res.data.user || null,
+          loading: false,
+          initialized: true,
+        });
+      } catch {
+        set({
           user: null,
           loading: false,
-          initialized: true
+          initialized: true,
         });
       }
     },
 
-    // Sign up with email
+    // Sign up with email/password
     signUpWithEmail: async (email, password, firstName = '', lastName = '') => {
       try {
-        const response = await api.post('/auth/signup', {
-          email,
-          password,
-          firstName,
-          lastName,
-        });
-        return { data: response.data, error: null };
-      } catch (error) {
-        return { 
-          data: null, 
-          error: error.response?.data || { message: 'Signup failed' } 
+        const res = await api.post(
+          '/auth/signup',
+          { email, password, firstName, lastName },
+          { withCredentials: true }
+        );
+        // user may not be logged in until email confirmed
+        return { data: res.data, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: err.response?.data || { message: 'Signup failed' },
         };
       }
     },
 
-    // Sign in with email
+    // Sign in with email/password
     signInWithEmail: async (email, password) => {
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      const { session } = response.data || {};
-      if (session?.access_token) {
-        localStorage.setItem('access_token', session.access_token);
-        localStorage.setItem('refresh_token', session.refresh_token);
-        // Optionally set user/session in store
-        set({ session, user: session.user });
+      try {
+        await api.post(
+          '/auth/login',
+          { email, password },
+          { withCredentials: true }
+        );
+        // hydrate user after login
+        const res = await api.get('/auth/user', { withCredentials: true });
+        set({ user: res.data.user });
+        return { data: res.data, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: err.response?.data || { message: 'Login failed' },
+        };
       }
-      return { data: response.data, error: null };
-    } catch (error) {
-      return {
-        data: null,
-        error: error.response?.data || { message: 'Login failed' },
-      };
-    }
-  },
-  
-    // Sign in with Google
+    },
+
+    // Start Google login (redirect)
     signInWithGoogle: async () => {
       try {
-        const response = await api.post('/auth/google');
-        // Redirect to Google OAuth URL
-        window.location.href = response.data.url;
-        return { data: response.data, error: null };
-      } catch (error) {
-        return { 
-          data: null, 
-          error: error.response?.data || { message: 'Google login failed' } 
+        const res = await api.post('/auth/google');
+        if (res.data?.url) {
+          window.location.href = res.data.url;
+        }
+        return { data: res.data, error: null };
+      } catch (err) {
+        return {
+          data: null,
+          error: err.response?.data || { message: 'Google login failed' },
         };
       }
     },
@@ -129,69 +92,47 @@ const useAuthStore = create(
     // Sign out
     signOut: async () => {
       try {
-        await api.post('/auth/signout');
-        await supabase.auth.signOut();
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        
-        set({
-          user: null,
-          session: null
-        });
-        
+        await api.post('/auth/signout', {}, { withCredentials: true });
+        set({ user: null });
         return { error: null };
-      } catch (error) {
-        return { 
-          error: error.response?.data || { message: 'Logout failed' } 
+      } catch (err) {
+        return {
+          error: err.response?.data || { message: 'Logout failed' },
         };
       }
     },
 
-    // Get current user from API
+    // Get current user (force refresh from backend)
     getCurrentUser: async () => {
       try {
-        const response = await api.get('/auth/user');
-        set({ user: response.data.user });
-        return { data: response.data, error: null };
-      } catch (error) {
-        return { 
-          data: null, 
-          error: error.response?.data || { message: 'Failed to get user' } 
+        const res = await api.get('/auth/me', { withCredentials: true });
+        set({ user: res.data.user || null });
+        return { data: res.data, error: null };
+      } catch (err) {
+        set({ user: null });
+        return {
+          data: null,
+          error: err.response?.data || { message: 'Failed to get user' },
         };
       }
     },
 
-    // Refresh session
+    // Refresh session (rotate cookies)
     refreshSession: async () => {
-      const refreshToken = localStorage.getItem('refresh_token');
-      if (!refreshToken) return { error: { message: 'No refresh token' } };
-
       try {
-        const response = await api.post('/auth/refresh', {
-          refresh_token: refreshToken,
-        });
-        
-        const { session } = response.data;
-        localStorage.setItem('access_token', session.access_token);
-        localStorage.setItem('refresh_token', session.refresh_token);
-        
-        set({
-          session,
-          user: session.user
-        });
-        
-        return { data: response.data, error: null };
-      } catch (error) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        set({ user: null, session: null });
-        
-        return { 
-          data: null, 
-          error: error.response?.data || { message: 'Token refresh failed' } 
+        await api.post('/auth/refresh', {}, { withCredentials: true });
+        // optionally hydrate user again
+        const res = await api.get('/auth/user', { withCredentials: true });
+        set({ user: res.data.user || null });
+        return { data: res.data, error: null };
+      } catch (err) {
+        set({ user: null });
+        return {
+          data: null,
+          error: err.response?.data || { message: 'Token refresh failed' },
         };
       }
-    }
+    },
   }))
 );
 

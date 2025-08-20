@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 
 const Login = () => {
@@ -10,18 +10,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const { signInWithEmail, signInWithGoogle } = useAuthStore();
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-
-  // Handle OAuth redirect tokens
-  useEffect(() => {
-    const access = params.get('access_token');
-    const refresh = params.get('refresh_token');
-    if (access && refresh) {
-      localStorage.setItem('access_token', access);
-      localStorage.setItem('refresh_token', refresh);
-      navigate('/', { replace: true });
-    }
-  }, [params, navigate]);
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -44,6 +32,7 @@ const Login = () => {
       setError(error.error || error.message || 'Google login failed');
       setLocalLoading(false);
     }
+    // after successful login, backend sets cookies → redirect to /auth/success
   };
 
   return (
