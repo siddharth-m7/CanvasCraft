@@ -3,10 +3,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PublicRoute from './routes/PublicRoute';
 import ProtectedRoute from './routes/ProtectedRoute';
-import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Editor from './pages/Editor';
 import AuthSuccess from './pages/AuthSuccess';
 import Homepage from './pages/homepage/Homepage';
 
@@ -67,6 +67,14 @@ const App = () => {
               <Shell>
                 <Dashboard />
               </Shell>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/editor"
+          element={
+            <ProtectedRoute fallback={<Loader />}>
+              <Editor />
             </ProtectedRoute>
           }
         />

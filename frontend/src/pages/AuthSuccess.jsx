@@ -13,7 +13,7 @@ export default function AuthSuccess() {
       try {
         await initialize();
       } finally {
-        navigate('/', { replace: true });
+        navigate('/editor', { replace: true });
       }
     })();
   }, [initialize, navigate]);

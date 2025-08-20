@@ -11,7 +11,7 @@ const PublicRoute = ({ children, fallback = null }) => {
   }, [initialized, initialize]);
 
   if (loading || !initialized) return fallback;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/editor" replace />;
 
   return children;
 };

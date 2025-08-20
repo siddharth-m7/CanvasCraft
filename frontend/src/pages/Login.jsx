@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 
 const Login = () => {
@@ -9,7 +9,6 @@ const Login = () => {
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState('');
   const { signInWithEmail, signInWithGoogle } = useAuthStore();
-  const navigate = useNavigate();
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -18,9 +17,8 @@ const Login = () => {
     const { error } = await signInWithEmail(email, password);
     if (error) {
       setError(error.error || error.message || 'Login failed');
-    } else {
-      navigate('/', { replace: true });
     }
+    // Let PublicRoute handle the redirect automatically when user state updates
     setLocalLoading(false);
   };
 

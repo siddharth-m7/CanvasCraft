@@ -1,13 +1,22 @@
 // components/Header.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { Palette } from 'lucide-react';
+import useAuthStore from '../../stores/authStore';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, initialize, initialized } = useAuthStore();
+
+  // Initialize auth when component mounts
+  useEffect(() => {
+    if (!initialized) {
+      initialize();
+    }
+  }, [initialized, initialize]);
 
   const handleSignIn = () => {
     navigate('/login');
@@ -15,6 +24,10 @@ const Header = () => {
 
   const handleGetStarted = () => {
     navigate('/signup');
+  };
+
+  const handleUserProfile = () => {
+    navigate('/editor');
   };
 
   const handleLogoClick = () => {
@@ -71,22 +84,41 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSignIn}
-              className="px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
-            >
-              Sign In
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleGetStarted}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Get Started
-            </motion.button>
+            {user ? (
+              // Show user profile icon when logged in
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleUserProfile}
+                className="flex items-center space-x-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                title="Go to Editor"
+              >
+                <UserCircleIcon className="h-5 w-5" />
+                <span className="text-sm font-medium">
+                  {user.email?.split('@')[0] || 'User'}
+                </span>
+              </motion.button>
+            ) : (
+              // Show sign in and get started buttons when not logged in
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSignIn}
+                  className="px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                >
+                  Sign In
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleGetStarted}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Get Started
+                </motion.button>
+              </>
+            )}
           </div>
 
           <button
@@ -120,26 +152,44 @@ const Header = () => {
             
             {/* Mobile Auth Buttons */}
             <div className="pt-4 space-y-2 border-t border-gray-200">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  handleSignIn();
-                  setIsOpen(false);
-                }}
-                className="w-full px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
-              >
-                Sign In
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  handleGetStarted();
-                  setIsOpen(false);
-                }}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Get Started
-              </motion.button>
+              {user ? (
+                // Show user profile button in mobile when logged in
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    handleUserProfile();
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  <span>Go to Editor ({user.email?.split('@')[0] || 'User'})</span>
+                </motion.button>
+              ) : (
+                // Show sign in and get started buttons in mobile when not logged in
+                <>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      handleSignIn();
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                  >
+                    Sign In
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      handleGetStarted();
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    Get Started
+                  </motion.button>
+                </>
+              )}
             </div>
           </div>
         </motion.div>

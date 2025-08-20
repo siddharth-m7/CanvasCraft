@@ -20,13 +20,32 @@ const useAuthStore = create(
       set({ loading: true });
 
       try {
-        // const res = await api.get('/auth/user', { withCredentials: true });
-        set({
-          user: res.data.user || null,
-          loading: false,
-          initialized: true,
+        // Make a direct axios call to avoid interceptor redirect on 401
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000/api'}/auth/user`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
+        
+        if (res.ok) {
+          const data = await res.json();
+          set({
+            user: data.user || null,
+            loading: false,
+            initialized: true,
+          });
+        } else {
+          // 401 or other error - user not authenticated
+          set({
+            user: null,
+            loading: false,
+            initialized: true,
+          });
+        }
       } catch {
+        // Network error or other issues
         set({
           user: null,
           loading: false,
@@ -56,19 +75,47 @@ const useAuthStore = create(
     // Sign in with email/password
     signInWithEmail: async (email, password) => {
       try {
-        await api.post(
-          '/auth/login',
-          { email, password },
-          { withCredentials: true }
-        );
-        // hydrate user after login
-        const res = await api.get('/auth/user', { withCredentials: true });
-        set({ user: res.data.user });
-        return { data: res.data, error: null };
+        // Use fetch to avoid axios interceptor issues
+        const loginRes = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000/api'}/auth/login`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!loginRes.ok) {
+          const errorData = await loginRes.json();
+          return {
+            data: null,
+            error: errorData || { message: 'Login failed' },
+          };
+        }
+
+        // Get user data after successful login
+        const userRes = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000/api'}/auth/user`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          set({ user: userData.user });
+          return { data: userData, error: null };
+        } else {
+          return {
+            data: null,
+            error: { message: 'Failed to get user data after login' },
+          };
+        }
       } catch (err) {
         return {
           data: null,
-          error: err.response?.data || { message: 'Login failed' },
+          error: { message: 'Login failed' },
         };
       }
     },
@@ -78,6 +125,7 @@ const useAuthStore = create(
       try {
         const res = await api.post('/auth/google');
         if (res.data?.url) {
+          console.log('Redirecting to Google login:', res.data.url);
           window.location.href = res.data.url;
         }
         return { data: res.data, error: null };
