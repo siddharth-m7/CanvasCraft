@@ -155,20 +155,30 @@ const refreshToken = async (req, res) => {
   }
 };
 
-const getLoggedInUser= async (req, res) => {
+const getLoggedInUser = async (req, res) => {
   try {
     const accessToken = req.cookies["sb-access-token"];
-    if (!accessToken) return res.status(401).json({ error: "Not authenticated" });
+    
+    if (!accessToken) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
 
     const { data: { user }, error } = await supabase.auth.getUser(accessToken);
-    if (error || !user) return res.status(401).json({ error: "Invalid or expired session" });
+    
+    if (error || !user) {
+      // Clear invalid cookies
+      res.clearCookie('sb-access-token', { path: '/' });
+      res.clearCookie('sb-refresh-token', { path: '/' });
+      return res.status(401).json({ error: "Invalid or expired session" });
+    }
 
     return res.json({ user });
   } catch (err) {
-    console.error("Auth /me error:", err);
+    console.error("Auth /user error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 module.exports = {
   signupEmail,

@@ -22,10 +22,9 @@ router.post('/google', googleOAuth);
 router.get('/callback', googleOAuthCallback);
 
 router.post('/signout', authenticateUser, signout);
-router.post('/refresh', refreshToken);
+router.post('/refresh', authenticateUser, refreshToken);
 
-router.get('/user', authenticateUser, (req, res) => {
-  res.json({ user: req.user });
-});
+router.get('/user', getLoggedInUser);
+router.get('/me', getLoggedInUser);
 
 module.exports = router;

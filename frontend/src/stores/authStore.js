@@ -20,7 +20,7 @@ const useAuthStore = create(
       set({ loading: true });
 
       try {
-        const res = await api.get('/auth/user', { withCredentials: true });
+        // const res = await api.get('/auth/user', { withCredentials: true });
         set({
           user: res.data.user || null,
           loading: false,

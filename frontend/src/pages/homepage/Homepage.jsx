@@ -22,13 +22,25 @@ function Homepage() {
 
   return (
     <div className="App bg-white">
+      
       <Header />
       <Hero />
-      <Features />
-      <Gallery />
+      <section id="features">
+        <Features />
+      </section>
+
+      <section id="gallery">
+        <Gallery />
+      </section>
+
+    <section id="testimonials">
       <Testimonials />
-      <CTA />
+    </section>
+    <CTA />
+    <section id="about">
       <Footer />
+    </section>
+
     </div>
   );
 }

@@ -57,6 +57,7 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use(cookieParser());
 
 // Health check
 app.get('/api/health', (req, res) => {

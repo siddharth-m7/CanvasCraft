@@ -27,13 +27,12 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Homepage */}
+        {/* Homepage - Now default route */}
         <Route
-          path="/home"
-          element={
-                <Homepage />
-          }
+          path="/"
+          element={<Homepage />}
         />
+        
         {/* Public */}
         <Route
           path="/login"
@@ -55,14 +54,14 @@ const App = () => {
             </PublicRoute>
           }
         />
+        
         {/* OAuth success passthrough */}
         <Route path="/auth/success" element={<AuthSuccess />} />
         <Route path="/auth/callback" element={<AuthSuccess />} />
 
-
         {/* Protected */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute fallback={<Loader />}>
               <Shell>
@@ -71,7 +70,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
