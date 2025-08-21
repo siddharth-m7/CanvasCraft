@@ -3,12 +3,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 const CTA = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
+  const navigate = useNavigate();
 
   return (
     <section ref={ref} className="py-20 gradient-bg">
@@ -39,6 +41,7 @@ const CTA = () => {
           className="flex justify-center"
         >
           <motion.button
+            onClick={() => navigate('/editor')}
             whileHover={{ 
               scale: 1.08, 
               boxShadow: '0 15px 35px rgba(0,0,0,0.3)' 

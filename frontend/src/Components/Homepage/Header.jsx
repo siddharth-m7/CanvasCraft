@@ -23,7 +23,7 @@ const Header = () => {
   };
 
   const handleGetStarted = () => {
-    navigate('/signup');
+    navigate('/editor');
   };
 
   const handleUserProfile = () => {
@@ -42,7 +42,7 @@ const Header = () => {
         block: 'start'
       });
     }
-    setIsOpen(false); // Close mobile menu after clicking
+    setIsOpen(false); 
   };
 
   const navigationItems = [

@@ -1,5 +1,6 @@
 // components/Hero.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Sparkles, Wand2 } from 'lucide-react';
@@ -14,12 +15,12 @@ const Hero = () => {
     triggerOnce: true,
     threshold: 0.1,
   });
+  const navigate = useNavigate();
 
-  // Hero images with consistent pattern (fixed property names)
   const heroImages = [
     {
       id: 1,
-      image: aiGeneratedImage, // Changed from 'image' to consistent 'image'
+      image: aiGeneratedImage,
       alt: "AI Generated Art",
       title: "AI Generated Art",
       description: "Digital artwork created with AI"
@@ -39,6 +40,22 @@ const Hero = () => {
       description: "Transform your photos"
     }
   ];
+
+  const handleGetStarted = () => {
+     // Redirect to editor page
+    navigate('/editor');
+  };
+
+  const handleExampleClick = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    setIsOpen(false); // Close mobile menu after clicking
+  };
 
   return (
     <section ref={ref} className="pt-20 pb-16 gradient-bg min-h-screen flex items-center">
@@ -76,6 +93,7 @@ const Hero = () => {
               className="flex flex-col sm:flex-row gap-4"
             >
               <motion.button
+                onClick={handleGetStarted}
                 whileHover={{ scale: 1.05, boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-gray-50 text-emerald-700 rounded-lg font-semibold hover:bg-white transition-all flex items-center justify-center space-x-2"
@@ -85,6 +103,7 @@ const Hero = () => {
               </motion.button>
 
               <motion.button
+                onClick={() => handleExampleClick('gallery')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 border-2 border-emerald-200 text-emerald-100 rounded-lg font-semibold hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center justify-center space-x-2"
