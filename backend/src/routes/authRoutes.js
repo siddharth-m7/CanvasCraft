@@ -1,21 +1,19 @@
-// routes/authRoutes.js
 const express = require('express');
-const { authenticateUser } = require('../middleware/auth');
-const {
-  signupEmail,
-  loginEmail,
-  signout,
-  refreshToken,
-  getLoggedInUser
-} = require('../controllers/authController');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const { signUpController,loginController,logoutController,CurrentUserController } = require('../controllers/authController');
 
 const router = express.Router();
 
-router.post('/signup', signupEmail);
-router.post('/login', loginEmail);
-router.post('/signin', loginEmail);
+// SignUp route
+router.post('/signup', signUpController);
 
-router.post('/signout', authenticateUser, signout);
+// login route
+router.post('/login', loginController);
 
+router.post('/logout', logoutController);
+
+router.get('/me', CurrentUserController);
 
 module.exports = router;

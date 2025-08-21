@@ -9,18 +9,7 @@ import useAuthStore from '../../stores/authStore';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, initialize, initialized } = useAuthStore();
-
-  // Initialize auth when component mounts
-  useEffect(() => {
-    if (!initialized) {
-      initialize();
-    }
-  }, [initialized, initialize]);
-
-  const handleSignIn = () => {
-    navigate('/login');
-  };
+  const { user, isAuthenticated } = useAuthStore();
 
   const handleGetStarted = () => {
     navigate('/editor');
@@ -34,22 +23,26 @@ const Header = () => {
     navigate('/');
   };
 
+  const handleSignIn = () => {
+    navigate('/login'); // 👈 define this route in your app
+  };
+
   const handleSectionClick = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ 
+      element.scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
+        block: 'start',
       });
     }
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   const navigationItems = [
     { name: 'Features', id: 'features' },
     { name: 'Gallery', id: 'gallery' },
-    { name: 'Testimonials', id: 'testimonials' }, // Added testimonials
-    { name: 'About', id: 'about' }
+    { name: 'Testimonials', id: 'testimonials' },
+    { name: 'About', id: 'about' },
   ];
 
   return (
@@ -61,6 +54,7 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
+          {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             onClick={handleLogoClick}
@@ -70,6 +64,7 @@ const Header = () => {
             <span className="text-2xl font-bold text-black">CanvasCraft</span>
           </motion.div>
 
+          {/* Desktop Nav */}
           <nav className="hidden md:flex space-x-8">
             {navigationItems.map((item) => (
               <motion.button
@@ -83,9 +78,9 @@ const Header = () => {
             ))}
           </nav>
 
+          {/* Desktop Auth Buttons */}
           <div className="hidden md:flex space-x-4">
-            {user ? (
-              // Show user profile icon when logged in
+            {isAuthenticated ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -95,11 +90,10 @@ const Header = () => {
               >
                 <UserCircleIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
-                  {user.email?.split('@')[0] || 'User'}
+                  {user?.username || user?.email?.split('@')[0] || 'User'}
                 </span>
               </motion.button>
             ) : (
-              // Show sign in and get started buttons when not logged in
               <>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -121,10 +115,8 @@ const Header = () => {
             )}
           </div>
 
-          <button
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          {/* Mobile Menu Toggle */}
+          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? (
               <XMarkIcon className="h-6 w-6" />
             ) : (
@@ -149,11 +141,10 @@ const Header = () => {
                 {item.name}
               </button>
             ))}
-            
+
             {/* Mobile Auth Buttons */}
             <div className="pt-4 space-y-2 border-t border-gray-200">
-              {user ? (
-                // Show user profile button in mobile when logged in
+              {isAuthenticated ? (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
@@ -163,10 +154,11 @@ const Header = () => {
                   className="w-full flex items-center justify-center space-x-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
                 >
                   <UserCircleIcon className="h-5 w-5" />
-                  <span>Go to Editor ({user.email?.split('@')[0] || 'User'})</span>
+                  <span>
+                    Go to Editor ({user?.username || user?.email?.split('@')[0] || 'User'})
+                  </span>
                 </motion.button>
               ) : (
-                // Show sign in and get started buttons in mobile when not logged in
                 <>
                   <motion.button
                     whileTap={{ scale: 0.95 }}
