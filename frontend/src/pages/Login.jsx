@@ -8,7 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signInWithEmail, signInWithGoogle } = useAuthStore();
+  const { signInWithEmail } = useAuthStore();
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -22,16 +22,7 @@ const Login = () => {
     setLocalLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setLocalLoading(true);
-    setError('');
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setError(error.error || error.message || 'Google login failed');
-      setLocalLoading(false);
-    }
-    // after successful login, backend sets cookies → redirect to /auth/success
-  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -81,15 +72,7 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="mt-6">
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full inline-flex justify-center items-center rounded border border-gray-300 bg-white py-2.5 hover:bg-gray-50 disabled:opacity-60"
-            disabled={localLoading}
-          >
-            {localLoading ? 'Redirecting…' : 'Continue with Google'}
-          </button>
-        </div>
+
 
         <div className="mt-6 text-sm text-center text-gray-700">
           Don&apos;t have an account?{' '}

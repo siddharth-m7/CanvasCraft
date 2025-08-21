@@ -120,22 +120,7 @@ const useAuthStore = create(
       }
     },
 
-    // Start Google login (redirect)
-    signInWithGoogle: async () => {
-      try {
-        const res = await api.post('/auth/google');
-        if (res.data?.url) {
-          console.log('Redirecting to Google login:', res.data.url);
-          window.location.href = res.data.url;
-        }
-        return { data: res.data, error: null };
-      } catch (err) {
-        return {
-          data: null,
-          error: err.response?.data || { message: 'Google login failed' },
-        };
-      }
-    },
+
 
     // Sign out
     signOut: async () => {

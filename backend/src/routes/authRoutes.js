@@ -4,8 +4,7 @@ const { authenticateUser } = require('../middleware/auth');
 const {
   signupEmail,
   loginEmail,
-  googleOAuth,
-  googleOAuthCallback,
+
   signout,
   refreshToken,
   getLoggedInUser
@@ -18,8 +17,7 @@ router.post('/login', loginEmail);
 // Optional alias to match current frontend usage:
 router.post('/signin', loginEmail);
 
-router.post('/google', googleOAuth);
-router.get('/callback', googleOAuthCallback);
+
 
 router.post('/signout', authenticateUser, signout);
 router.post('/refresh', authenticateUser, refreshToken);

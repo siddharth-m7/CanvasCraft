@@ -79,43 +79,7 @@ const loginEmail = async (req, res) => {
   }
 };
 
-// Start Google OAuth
-const googleOAuth = async (_req, res) => {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        // ✅ send Google back to SERVER callback, not the client
-        redirectTo: `${process.env.SERVER_URL}/api/auth/callback`,
-      },
-    });
-    if (error) return res.status(400).json({ error: error.message });
 
-    return res.json({ message: 'Google OAuth initiated', url: data.url });
-  } catch (err) {
-    console.error('Google OAuth error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-// Handle OAuth callback (server exchange)
-const googleOAuthCallback = async (req, res) => {
-  const { code } = req.query;
-  if (!code) return res.status(400).json({ error: 'Authorization code not provided' });
-
-  try {
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) return res.status(400).json({ error: error.message });
-
-    res.cookie('sb-access-token', data.session.access_token, cookieOpts(1));
-    res.cookie('sb-refresh-token', data.session.refresh_token, cookieOpts(24 * 30));
-
-    return res.redirect(`${process.env.CLIENT_URL}/auth/success`);
-  } catch (err) {
-    console.error('OAuth callback error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
 
 
 // Sign out
@@ -183,8 +147,6 @@ const getLoggedInUser = async (req, res) => {
 module.exports = {
   signupEmail,
   loginEmail,
-  googleOAuth,
-  googleOAuthCallback,
   signout,
   refreshToken,
   getLoggedInUser
