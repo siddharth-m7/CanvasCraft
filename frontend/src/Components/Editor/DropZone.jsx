@@ -1,13 +1,17 @@
-// components/DropZone.jsx
-import React, { useCallback } from "react";
+// components/DropZone.jsx (Enhanced)
+import React, { useCallback, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload } from "lucide-react";
 
 const DropZone = ({ onDropFile }) => {
+  const originalFileRef = useRef(null);
+
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles && acceptedFiles.length > 0) {
-        onDropFile(acceptedFiles[0]); // pass the first file to parent
+        const file = acceptedFiles[0];
+        originalFileRef.current = file; // Store original file
+        onDropFile(file);
       }
     },
     [onDropFile]
@@ -15,19 +19,28 @@ const DropZone = ({ onDropFile }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] }, // only images
-    multiple: false, // only one file at a time
+    accept: {
+      "image/*": []
+    },
+    multiple: false,
   });
+
+  // Expose original file for parent component
+  React.useImperativeHandle(originalFileRef, () => ({
+    getOriginalFile: () => originalFileRef.current
+  }));
 
   return (
     <div
       {...getRootProps()}
-      className={`flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-6 cursor-pointer transition 
-      ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-400 bg-gray-100/40"} 
-      hover:border-blue-400 hover:bg-blue-50`}
+      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        isDragActive
+          ? "border-blue-500 bg-blue-50"
+          : "border-gray-300 hover:border-gray-400"
+      }`}
     >
       <input {...getInputProps()} />
-      <Upload className="w-10 h-10 text-gray-500 mb-2" />
+      <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
       {isDragActive ? (
         <p className="text-blue-600 font-medium">Drop the image here...</p>
       ) : (
@@ -36,6 +49,9 @@ const DropZone = ({ onDropFile }) => {
           <span className="text-blue-600 font-medium">click to upload</span>
         </p>
       )}
+      <p className="text-sm text-gray-500 mt-2">
+        Images larger than 2000×2000px will be compressed
+      </p>
     </div>
   );
 };

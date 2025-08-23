@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAuthStore from '../stores/authStore';
+import useAuthStore from '../../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -37,7 +37,7 @@ export default function Navbar() {
     const navigationItems = [
         { name: 'AI Image Generator', href: '/' },
         { name: 'Tools', href: '/editor' },
-        { name: 'Image Editor', href: '/about' },
+        { name: 'Image Editor', href: '/editor' },
         { name: 'About', href: '/contact' },
     ];
 
@@ -64,14 +64,15 @@ export default function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-8">
                         {navigationItems.map((item) => (
-                            <motion.a
+                            <motion.button
+                                onClick={() => navigate(item.href)}
                                 key={item.name}
                                 href={item.href}
                                 whileHover={{ scale: 1.1, color: '#059669' }}
                                 className="text-black hover:text-green-600 transition-colors font-medium"
                             >
                                 {item.name}
-                            </motion.a>
+                            </motion.button>
                         ))}
                     </div>
 

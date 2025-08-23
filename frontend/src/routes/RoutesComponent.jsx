@@ -2,7 +2,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Editor from '../pages/Editor';
 import Homepage from '../pages/homepage/Homepage';
-import Navbar from '../Components/Navbar';
+import Navbar from '../Components/Comman/Navbar';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 const Loader = () => (
