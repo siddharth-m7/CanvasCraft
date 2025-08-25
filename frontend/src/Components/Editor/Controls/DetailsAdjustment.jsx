@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { RotateCcw, Lightbulb, Loader2 } from 'lucide-react';
+import { RotateCcw, Eye, Loader2 } from 'lucide-react';
 import useCanvasStore from '../../../stores/canvasStore';
 import { applyAllFiltersDebounced } from '../../../utils/glfxUtils';
-import './control.css';
 
-const LightAdjustment = () => {
+const DetailsAdjustment = () => {
   const fabricCanvas = useCanvasStore((state) => state.fabricCanvas);
   const originalImage = useCanvasStore((state) => state.originalImage);
   const currentFilters = useCanvasStore((state) => state.currentFilters);
@@ -12,17 +11,19 @@ const LightAdjustment = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Get only light-related filters (brightness removed)
-  const lightFilters = {
-    contrast: currentFilters.contrast,
-    exposure: currentFilters.exposure,
-    highlights: currentFilters.highlights,
-    shadows: currentFilters.shadows,
+  // Get only detail-related filters
+  const detailFilters = {
+    sharpness: currentFilters.sharpness,
+    structure: currentFilters.structure,
+    clarity: currentFilters.clarity,
+    dehaze: currentFilters.dehaze,
+    vignette: currentFilters.vignette,
+    grain: currentFilters.grain,
   };
 
   useEffect(() => {
     if (fabricCanvas && originalImage && fabricCanvas.getObjects().length > 0) {
-      console.log("💡 Applying ALL filters:", currentFilters);
+      console.log("🔍 Applying ALL filters:", currentFilters);
       setIsProcessing(true);
 
       applyAllFiltersDebounced({
@@ -40,24 +41,28 @@ const LightAdjustment = () => {
     }
   }, [fabricCanvas, originalImage, currentFilters]);
 
-  const updateLightSetting = (setting, value) => {
+  const updateDetailSetting = (setting, value) => {
     updateFilters({ [setting]: value });
   };
 
-  const resetLightFilters = () => {
+  const resetDetailFilters = () => {
     updateFilters({
-      contrast: 50,
-      exposure: 50,
-      highlights: 50,
-      shadows: 50,
+      sharpness: 50,
+      structure: 50,
+      clarity: 50,
+      dehaze: 50,
+      vignette: 50,
+      grain: 0,
     });
   };
 
-  const lightControls = [
-    { key: 'contrast', label: 'Contrast' },
-    { key: 'exposure', label: 'Exposure' },
-    { key: 'highlights', label: 'Highlights' },
-    { key: 'shadows', label: 'Shadows' },
+  const detailControls = [
+    { key: 'sharpness', label: 'Sharpness', centerAt: 50 },
+    { key: 'structure', label: 'Structure', centerAt: 50 },
+    { key: 'clarity', label: 'Clarity', centerAt: 50 },
+    { key: 'dehaze', label: 'Dehaze', centerAt: 50 },
+    { key: 'vignette', label: 'Vignette', centerAt: 50 },
+    { key: 'grain', label: 'Film Grain', centerAt: 0 },
   ];
 
   const isReady = fabricCanvas && originalImage && fabricCanvas?.getObjects?.()?.length > 0;
@@ -68,11 +73,11 @@ const LightAdjustment = () => {
       <div className="border-b border-gray-200 p-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-black flex items-center gap-2">
-            <Lightbulb size={20} className="text-green-600" />
-            Light & Exposure
+            <Eye size={20} className="text-green-600" />
+            Details & Effects
           </h3>
           <button
-            onClick={resetLightFilters}
+            onClick={resetDetailFilters}
             disabled={isProcessing}
             className="flex items-center gap-2 px-3 py-1.5 text-sm text-black hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300 rounded-md transition-colors"
           >
@@ -87,7 +92,7 @@ const LightAdjustment = () => {
         {isProcessing && (
           <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
             <Loader2 size={16} className="text-green-600 animate-spin" />
-            <span className="text-black text-sm">Adjusting lighting...</span>
+            <span className="text-black text-sm">Enhancing details...</span>
           </div>
         )}
 
@@ -112,9 +117,9 @@ const LightAdjustment = () => {
 
         {/* Sliders */}
         <div className="space-y-4">
-          {lightControls.map(({ key, label }) => {
-            const value = lightFilters[key];
-            const adjustedValue = value - 50;
+          {detailControls.map(({ key, label, centerAt }) => {
+            const value = detailFilters[key];
+            const adjustedValue = centerAt === 0 ? value : value - centerAt;
             
             return (
               <div key={key}>
@@ -123,7 +128,10 @@ const LightAdjustment = () => {
                     {label}
                   </label>
                   <span className="text-xs text-black bg-gray-100 px-2 py-1 rounded font-mono">
-                    {adjustedValue > 0 ? '+' : ''}{adjustedValue}
+                    {centerAt === 0 ? 
+                      adjustedValue : 
+                      (adjustedValue > 0 ? '+' : '') + adjustedValue
+                    }
                   </span>
                 </div>
                 
@@ -133,35 +141,57 @@ const LightAdjustment = () => {
                     min="0"
                     max="100"
                     value={value}
-                    onChange={(e) => updateLightSetting(key, parseInt(e.target.value))}
+                    onChange={(e) => updateDetailSetting(key, parseInt(e.target.value))}
                     disabled={isProcessing}
                     className="w-full slider-green"
                     style={{ 
                       '--slider-progress': `${value}%` 
                     }}
                   />
+                  {/* Center line indicator for sliders that don't start at 0 */}
+                  {centerAt !== 0 && (
+                    <div 
+                      className="absolute top-1/2 transform -translate-y-1/2 w-0.5 h-3 bg-gray-400 pointer-events-none rounded"
+                      style={{ left: `${(centerAt / 100) * 100}%` }}
+                    />
+                  )}
                 </div>
                 
                 <div className="flex justify-between mt-1 text-xs text-gray-500">
-                  <span>-50</span>
-                  <span>0</span>
-                  <span>+50</span>
+                  {centerAt === 0 ? (
+                    <>
+                      <span>0</span>
+                      <span>50</span>
+                      <span>100</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>-50</span>
+                      <span>0</span>
+                      <span>+50</span>
+                    </>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Info Note */}
+        {/* Pro Tips */}
         <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-black">
-            <span className="font-medium">Note:</span> Brightness control is available in Color Adjustments. 
-            Use contrast for depth and exposure for dramatic lighting effects.
-          </p>
+          <div className="text-sm text-black">
+            <span className="font-medium">Pro Tips:</span>
+            <ul className="mt-1 space-y-1 text-xs">
+              <li><span className="font-medium">Structure:</span> Enhances texture and detail</li>
+              <li><span className="font-medium">Clarity:</span> Adds punch and definition</li>
+              <li><span className="font-medium">Vignette:</span> Darkens edges for focus</li>
+              <li><span className="font-medium">Grain:</span> Adds film texture</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LightAdjustment;
+export default DetailsAdjustment;

@@ -33,7 +33,7 @@ const DropZone = ({ onDropFile }) => {
   return (
     <div
       {...getRootProps()}
-      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+      className={`border-2 border-dashed rounded-lg max-w-3xl m-auto min-h-80 text-center justify-center p-20 mt-28 cursor-pointer transition-colors ${
         isDragActive
           ? "border-blue-500 bg-blue-50"
           : "border-gray-300 hover:border-gray-400"

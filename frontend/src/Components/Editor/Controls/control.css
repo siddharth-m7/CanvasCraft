@@ -1,0 +1,108 @@
+/* Minimalist Green Slider Styling */
+.slider-green {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.slider-green:hover {
+  background: #d1d5db;
+}
+
+.slider-green:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.slider-green::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.slider-green::-webkit-slider-thumb:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.slider-green::-webkit-slider-thumb:active {
+  background: #14532d;
+  transform: scale(0.95);
+}
+
+.slider-green:disabled::-webkit-slider-thumb {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Firefox */
+.slider-green::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.slider-green::-moz-range-thumb:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.slider-green::-moz-range-thumb:active {
+  background: #14532d;
+  transform: scale(0.95);
+}
+
+.slider-green:disabled::-moz-range-thumb {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.slider-green::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  border: none;
+}
+
+.slider-green::-moz-range-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: #16a34a;
+}
+
+/* Additional visual enhancements */
+.slider-green:focus {
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.slider-green:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.slider-green:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress indication for filled portion */
+.slider-green {
+  background: linear-gradient(to right, #16a34a 0%, #16a34a var(--slider-progress, 50%), #e5e7eb var(--slider-progress, 50%), #e5e7eb 100%);
+}
