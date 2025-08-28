@@ -6,6 +6,11 @@ const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
 const mongoose = require('mongoose');
 require('dotenv').config();
+const  uploadRoutes = require("./routes/uploadRoutes.js");
+const imageRoutes = require("./routes/imageRoutes");
+const imageGenRoutes = require('./routes/imageGenRoutes.js');
+
+
 
 
 // Routes
@@ -55,12 +60,20 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth', authLimiter);
 }
 
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
 // Routes
 app.use('/api/auth', authRoutes);
+
+app.use("/api/upload", uploadRoutes);
+
+app.use("/api/images", imageRoutes);
+
+app.use('/api/generate-image', imageGenRoutes);
+
+
 
 // Health check
 app.get('/api/health', (req, res) => {

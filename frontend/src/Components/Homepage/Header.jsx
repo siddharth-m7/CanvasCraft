@@ -9,11 +9,25 @@ import useAuthStore from '../../stores/authStore';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleGetStarted = () => {
     navigate('/editor');
   };
+
+  const handleProfileClick = () => {
+    if (isAuthenticated) {
+      navigate('/profile');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const handleLogout = () => {
+        if (isAuthenticated) {
+            logout();
+        }
+    };
 
   const handleUserProfile = () => {
     navigate('/editor');
@@ -81,18 +95,28 @@ const Header = () => {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex space-x-4">
             {isAuthenticated ? (
+              <>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleUserProfile}
+                onClick={handleProfileClick}
                 className="flex items-center space-x-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
-                title="Go to Editor"
+                title="Go to Profile"
               >
                 <UserCircleIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   {user?.username || user?.email?.split('@')[0] || 'User'}
                 </span>
               </motion.button>
+              <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Logout
+                </motion.button>
+                </>
             ) : (
               <>
                 <motion.button

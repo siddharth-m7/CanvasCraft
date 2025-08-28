@@ -104,7 +104,7 @@ const Editor = () => {
   }, [imageInfo]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 mt-16">
+    <div className="bg-gray-50 p-6 mt-16">
       <div className="max-w-full mx-auto"> 
 
         {!uploadedFile && (

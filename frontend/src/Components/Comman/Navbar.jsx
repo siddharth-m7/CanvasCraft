@@ -16,6 +16,14 @@ export default function Navbar() {
         }
     };
 
+    const handleProfileClick = () => {
+        if (isAuthenticated) {
+            navigate('/profile');
+        } else {
+            navigate('/login');
+        }
+    };
+
     const handleLogin = () => {
         if (!isAuthenticated) {
             navigate('/login');
@@ -35,7 +43,7 @@ export default function Navbar() {
     };
 
     const navigationItems = [
-        { name: 'AI Image Generator', href: '/' },
+        { name: 'AI Image Generator', href: '/generate' },
         { name: 'Tools', href: '/editor' },
         { name: 'Image Editor', href: '/editor' },
         { name: 'About', href: '/contact' },
@@ -83,9 +91,9 @@ export default function Navbar() {
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={handleUserProfile}
+                                    onClick={handleProfileClick}
                                     className="flex items-center space-x-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
-                                    title="Go to Editor"
+                                    title="Go to Profile"
                                 >
                                     <UserCircleIcon className="h-5 w-5" />
                                     <span className="text-sm font-medium">
