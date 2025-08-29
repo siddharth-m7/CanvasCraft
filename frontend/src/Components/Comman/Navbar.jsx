@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Palette } from 'lucide-react';
 
-export default function Navbar() {
+const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, isAuthenticated, logout } = useAuthStore();
     const navigate = useNavigate();
@@ -226,3 +226,5 @@ export default function Navbar() {
         </motion.header>
     );
 }
+
+export default Navbar;
