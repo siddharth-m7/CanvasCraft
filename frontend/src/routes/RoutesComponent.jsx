@@ -5,7 +5,6 @@ import Homepage from '../pages/homepage/Homepage';
 import Navbar from '../components/comman/Navbar';
 import UploadImage from '../pages/UploadImage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import React from 'react';
 import ProfilePage from '../pages/ProfilePage';
 import ImageGeneratorComponent from '../pages/ImageGeneratorComponent';
 

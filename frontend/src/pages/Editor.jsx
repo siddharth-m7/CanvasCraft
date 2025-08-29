@@ -1,11 +1,11 @@
 // components/Editor.jsx
 import React, { useState, useCallback, useEffect } from "react";
 import { Download, Trash2, Upload, CheckCircle } from "lucide-react";
-import DropZone from "../components/Editor/DropZone";
-import ImageCanvas from "../components/Editor/ImageCanvas";
-import CompressionModal from "../components/Editor/CompressionModal";
+import DropZone from "../components/editor/DropZone";
+import ImageCanvas from "../components/editor/ImageCanvas";
+import CompressionModal from "../components/editor/CompressionModal";
 import { ImageCompressionUtil } from "../utils/imageCompression";
-import ControlContainer from "../components/Editor/ControlContainer";
+import ControlContainer from "../components/editor/ControlContainer";
 import useCanvasStore from "../stores/canvasStore"; // ✅ Zustand store
 
 const Editor = () => {

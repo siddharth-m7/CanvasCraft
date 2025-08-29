@@ -1,7 +1,7 @@
 // components/ImageCanvas.jsx
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Canvas, FabricImage } from "fabric";
-import useCanvasStore from "../../stores/canvasStore"; // ✅ Zustand store
+import useCanvasStore from "../../stores/canvasStore";
 
 const ImageCanvas = ({ uploadedFile }) => {
   const canvasRef = useRef(null);

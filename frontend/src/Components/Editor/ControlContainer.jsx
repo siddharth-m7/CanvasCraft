@@ -1,11 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Settings } from 'lucide-react';
-import ColorAdjustment from './Controls/ColorAdjustment';
-import CropAndRotate from './Controls/CropAndRotate';
-import LightAdjustment from './Controls/LightAdjustment';
-import DetailsAdjustment from './Controls/DetailsAdjustment';
-import Filters from './Controls/Filters';
+import ColorAdjustment from './controls/ColorAdjustment';
+import CropAndRotate from './controls/CropAndRotate';
+import LightAdjustment from './controls/LightAdjustment';
+import DetailsAdjustment from './controls/DetailsAdjustment';
+import Filters from './controls/Filters';
 
 const ControlContainer = () => {
     const [activeColorTab, setActiveColorTab] = useState(false);
