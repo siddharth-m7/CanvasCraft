@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useAuthStore from '../../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Palette } from 'lucide-react';
+
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
