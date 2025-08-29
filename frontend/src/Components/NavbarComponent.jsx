@@ -6,7 +6,7 @@ import { UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outlin
 import { Palette } from 'lucide-react';
 
 
-const Navbar = () => {
+const NavbarComponent = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, isAuthenticated, logout } = useAuthStore();
     const navigate = useNavigate();
@@ -228,4 +228,4 @@ const Navbar = () => {
     );
 }
 
-export default Navbar;
+export default NavbarComponent;
