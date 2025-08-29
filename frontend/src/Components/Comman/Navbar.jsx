@@ -44,7 +44,6 @@ export default function Navbar() {
 
     const navigationItems = [
         { name: 'AI Image Generator', href: '/generate' },
-        { name: 'Tools', href: '/editor' },
         { name: 'Image Editor', href: '/editor' },
         { name: 'About', href: '/contact' },
     ];

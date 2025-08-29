@@ -42,6 +42,11 @@ const Header = () => {
   };
 
   const handleSectionClick = (sectionId) => {
+    if(sectionId === 'generate'){
+      navigate('/generate');
+      setIsOpen(false);
+      return;
+    }
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({
@@ -57,6 +62,7 @@ const Header = () => {
     { name: 'Gallery', id: 'gallery' },
     { name: 'Testimonials', id: 'testimonials' },
     { name: 'About', id: 'about' },
+    { name: 'AI Image Generator', id:'generate',href: '/generate' }
   ];
 
   return (

@@ -27,14 +27,14 @@ const Hero = () => {
     },
     {
       id: 2,
-      image: imageEnhanceImage, // Changed from 'src' to 'image'
+      image: imageEnhanceImage,
       alt: "Photo Enhancement", 
       title: "Photo Enhancement",
       description: "Professional photo editing"
     },
     {
       id: 3,
-      image: portraitImage, // Changed from 'src' to 'image'
+      image: portraitImage, 
       alt: "Portrait Editing",
       title: "Portrait Editing", 
       description: "Transform your photos"
@@ -43,18 +43,11 @@ const Hero = () => {
 
   const handleGetStarted = () => {
      // Redirect to editor page
-    navigate('/editor');
+    navigate('/generate');
   };
 
-  const handleExampleClick = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-    setIsOpen(false); // Close mobile menu after clicking
+  const handleEditorClick = () => {
+    navigate('/editor');
   };
 
   return (
@@ -103,13 +96,13 @@ const Hero = () => {
               </motion.button>
 
               <motion.button
-                onClick={() => handleExampleClick('gallery')}
+                onClick={() => handleEditorClick()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 border-2 border-emerald-200 text-emerald-100 rounded-lg font-semibold hover:bg-emerald-50 hover:text-emerald-700 transition-all flex items-center justify-center space-x-2"
               >
                 <Sparkles className="h-5 w-5" />
-                <span>View Examples</span>
+                <span>Start Editing</span>
               </motion.button>
             </motion.div>
           </motion.div>

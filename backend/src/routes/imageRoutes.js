@@ -9,6 +9,4 @@ router.get("/my-images", authMiddleware, getUserImages);
 
 router.delete("/:imageId", authMiddleware, deleteUserImage);
 
-
-
 module.exports = router;
