@@ -2,7 +2,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Editor from '../pages/Editor';
 import Homepage from '../pages/homepage/Homepage';
-import Navbar from '../Components/Comman/Navbar';
+import Navbar from '../components/comman/Navbar';
 import UploadImage from '../pages/UploadImage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import React from 'react';
