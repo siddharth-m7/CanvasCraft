@@ -2,7 +2,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Editor from '../pages/Editor';
 import Homepage from '../pages/homepage/Homepage';
-import Navbar from '../components/common/NavbarComponent';
+import Navbar from '../components/NavbarComponent';
 import UploadImage from '../pages/UploadImage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProfilePage from '../pages/ProfilePage';
