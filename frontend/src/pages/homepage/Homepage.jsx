@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import './Homepage.css'; // Import the CSS file for styles
+import './homepage.css'; // Import the CSS file for styles
 
 import Header from '../../components/homepage/Header';
 import Hero from '../../components/homepage/Hero';
