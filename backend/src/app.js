@@ -36,16 +36,27 @@ app.use(helmet({
 app.use(cookieParser());
 app.use(morgan('combined'));
 
-const allowedOrigin = process.env.CLIENT_URL;
+const allowedOrigins = [
+  "http://localhost:5173",                       // local dev
+  "https://canvas-craft-coral.vercel.app"        // deployed frontend
+];
+
 app.use(cors({
   origin: function (origin, cb) {
-    if (!origin || origin === allowedOrigin) return cb(null, true);
-    return cb(new Error('CORS blocked'));
+    // allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return cb(null, true);
+    } else {
+      return cb(new Error("CORS blocked: " + origin));
+    }
   },
   credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization','X-CSRF-Token'],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
 }));
+
 
 // Routes
 app.use('/api/auth', authRoutes);
