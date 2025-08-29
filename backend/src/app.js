@@ -49,16 +49,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type','Authorization','X-CSRF-Token'],
 }));
 
-// basic rate-limit for auth routes
-if (process.env.NODE_ENV === 'production') {
-  const authLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100,                 // limit each IP to 100 requests per window
-    standardHeaders: true,    // return rate limit info in RateLimit-* headers
-    legacyHeaders: false,
-  });
+
 app.use('/api/auth', authLimiter);
-}
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
