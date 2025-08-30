@@ -37,14 +37,15 @@ app.use(cookieParser());
 app.use(morgan('combined'));
 
 
+const allowedOrigin = process.env.CLIENT_URL;
 app.use(cors({
-  origin: [
-    "https://canvas-craft-coral.vercel.app", 
-    "http://localhost:5173"
-  ],
-  credentials: true, // 🔑 required for cookies
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  origin: function (origin, cb) {
+    if (!origin || origin === allowedOrigin) return cb(null, true);
+    return cb(new Error('CORS blocked'));
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-CSRF-Token'],
 }));
 
 

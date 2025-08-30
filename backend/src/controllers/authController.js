@@ -34,7 +34,7 @@ const signUpController = async (req, res) => {
     res.cookie("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     const { password: _, ...safeUser } = newUser._doc;
@@ -68,7 +68,7 @@ const loginController = async (req, res) => {
     res.cookie("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     const { password: _, ...safeUser } = user._doc;
@@ -84,7 +84,7 @@ const logoutController = (req, res) => {
   res.clearCookie("authToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "none",
   });
   return res.status(200).json({ message: "Logout successful" });
 };
