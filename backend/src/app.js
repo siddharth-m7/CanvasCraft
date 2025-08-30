@@ -38,10 +38,15 @@ app.use(morgan('combined'));
 
 
 app.use(cors({
-  origin: "*",   // allow all origins
+  origin: [
+    "https://canvas-craft-coral.vercel.app", 
+    "http://localhost:5173"
+  ],
+  credentials: true, // 🔑 required for cookies
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
 }));
+
 
 
 // Routes
