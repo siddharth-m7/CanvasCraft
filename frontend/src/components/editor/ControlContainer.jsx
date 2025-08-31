@@ -2,28 +2,18 @@ import React from 'react';
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Settings } from 'lucide-react';
 import ColorAdjustment from './controls/ColorAdjustment';
-import CropAndRotate from './controls/CropAndRotate';
 import LightAdjustment from './controls/LightAdjustment';
 import DetailsAdjustment from './controls/DetailsAdjustment';
 import Filters from './controls/Filters';
 
 const ControlContainer = () => {
     const [activeColorTab, setActiveColorTab] = useState(false);
-    const [activeCropTab, setActiveCropTab] = useState(false);
     const [activeLightTab, setActiveLightTab] = useState(false);
     const [activeDetailsTab, setActiveDetailsTab] = useState(false);
     const [activeFilterTab, setActiveFilterTab] = useState(false);
 
     const toggleColorTab = () => {
         setActiveColorTab(prev => !prev);
-        setActiveCropTab(false);
-        setActiveLightTab(false);
-        setActiveDetailsTab(false);
-        setActiveFilterTab(false);
-    }
-    const toggleCropTab = () => {
-        setActiveCropTab(prev => !prev);
-        setActiveColorTab(false);
         setActiveLightTab(false);
         setActiveDetailsTab(false);
         setActiveFilterTab(false);
@@ -31,32 +21,23 @@ const ControlContainer = () => {
     const toggleLightTab = () => {
         setActiveLightTab(prev => !prev);
         setActiveColorTab(false);
-        setActiveCropTab(false);
         setActiveDetailsTab(false);
         setActiveFilterTab(false);
     }
     const toggleDetailsTab = () => {
         setActiveDetailsTab(prev => !prev);
-        setActiveColorTab(false);
-        setActiveCropTab(false);        
+        setActiveColorTab(false);       
         setActiveLightTab(false);
         setActiveFilterTab(false);
     }
     const toggleFilterTab = () => {
         setActiveFilterTab(prev => !prev);
-        setActiveColorTab(false);
-        setActiveCropTab(false);        
+        setActiveColorTab(false);      
         setActiveLightTab(false);
         setActiveDetailsTab(false);
     }
 
     const controlTabs = [
-        {
-            label: 'Crop and Rotate',
-            isActive: activeCropTab,
-            toggle: toggleCropTab,
-            component: <CropAndRotate />
-        },
         {
             label: 'Color Adjustments',
             isActive: activeColorTab,
